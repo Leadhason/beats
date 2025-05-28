@@ -25,7 +25,7 @@ export function TrackRow({ track, onTrackPlay }: TrackRowProps) {
           <img src={track.image || "/placeholder.svg"} alt={track.title} className="w-12 h-12 rounded" />
           <Button
             size="icon"
-            className="absolute inset-0 m-auto w-6 h-6 rounded-full bg-white text-black hover:bg-gray-200"
+            className="absolute inset-0 m-auto w-6 h-6 rounded-full cursor-pointer bg-white text-black hover:bg-gray-200"
             onClick={() => onTrackPlay(track.title)}
           >
             <Play className="w-3 h-3 ml-0.5" />
@@ -43,13 +43,13 @@ export function TrackRow({ track, onTrackPlay }: TrackRowProps) {
         ))}
       </div>
       <div className="col-span-2 flex items-center justify-end space-x-2">
-        <Button variant="outline" size="icon" className="border-gray-600 text-black w-8 h-8">
+        <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer text-black w-8 h-8">
           <Download className="w-3 h-3" />
         </Button>
-        <Button variant="outline" size="icon" className="border-gray-600 text-black w-8 h-8">
+        <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer text-black w-8 h-8">
           <Share2 className="w-3 h-3" />
         </Button>
-        <Button onClick={addToCart} className="bg-white text-black hover:bg-gray-200 text-sm px-3 py-1">
+        <Button onClick={addToCart} className="bg-white text-black hover:bg-gray-200 cursor-pointer text-sm px-3 py-1">
           🛒 {track.price}
         </Button>
       </div>

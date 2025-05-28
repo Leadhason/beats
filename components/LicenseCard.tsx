@@ -13,7 +13,7 @@ interface LicenseCardProps {
 
 export function LicenseCard({ license }: LicenseCardProps) {
   return (
-    <Card className={`bg-gray-800 border-gray-700 ${license.popular ? "ring-2 ring-white" : ""}`}>
+    <Card className={`bg-gray-600 border-gray-700 ${license.popular ? "ring-2 ring-white" : ""}`}>
       <CardContent className="p-6 text-center">
         {license.popular && (
           <div className="bg-gray-200 text-black text-sm font-bold py-1 px-3 rounded mb-4 inline-block">⭐ POPULAR</div>

@@ -19,10 +19,10 @@ export function Navigation() {
         <a href="/store" className="hover:text-gray-300">
           Store
         </a>
-        <a href="#" className="hover:text-gray-300">
+        <a href="about" className="hover:text-gray-300">
           About
         </a>
-        <a href="#" className="hover:text-gray-300">
+        <a href="/contact" className="hover:text-gray-300">
           Contact
         </a>
       </div>

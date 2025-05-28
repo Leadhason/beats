@@ -95,13 +95,13 @@ export function HeroSection({ onTrackPlay, onSearchResults }: HeroSectionProps) 
               <div className="text-sm text-gray-400">Featured Track • {featuredTrack.bpm}BPM</div>
               <h2 className="text-4xl font-bold">{featuredTrack.title}</h2>
               <div className="flex items-center space-x-4">
-                <Button onClick={addToCart} className="bg-white text-black hover:bg-gray-200">
+                <Button onClick={addToCart} className="bg-white cursor-pointer text-black hover:bg-gray-200">
                   🛒 {featuredTrack.price}
                 </Button>
-                <Button variant="outline" size="icon" className="border-gray-600 text-black">
+                <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer text-black">
                   <Download className="w-4 h-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="border-gray-600 text-black">
+                <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer text-black">
                   <Share2 className="w-4 h-4" />
                 </Button>
                 {featuredTrack.tags.map((tag) => (

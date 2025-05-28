@@ -18,16 +18,16 @@ export function Footer() {
         </div>
 
         <div className="flex justify-center space-x-6 mb-8 text-black">
-          <Button variant="outline" size="icon" className="border-gray-600 rounded-full">
+          <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer  rounded-full">
             <Instagram className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="icon" className="border-gray-600 rounded-full">
+          <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer rounded-full">
             <Music className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="icon" className="border-gray-600 rounded-full">
+          <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer rounded-full">
             <Twitter className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="icon" className="border-gray-600 rounded-full">
+          <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer rounded-full">
             <Youtube className="w-4 h-4" />
           </Button>
         </div>

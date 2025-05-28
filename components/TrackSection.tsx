@@ -46,7 +46,7 @@ export function TracksSection({ tracks, onTrackPlay, showAll = false, limit = 4,
         {!showAll && !searchQuery && displayTracks.length > limit && (
           <div className="text-center mt-8">
             <Link href="/store" className="inline-block">
-                <Button  variant="outline" className="border-black hover:border-white border hover:text-white hover:bg-transparent bg-white text-black">
+                <Button  variant="outline" className="border-black cursor-pointer hover:border-white border hover:text-white hover:bg-transparent bg-white text-black">
                 BROWSE ALL TRACKS
                 </Button>
             </Link>

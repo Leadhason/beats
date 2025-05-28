@@ -51,7 +51,7 @@ export function AudioPlayer({ currentTrack, isPlaying, onPlayPause, onNext, onPr
             <div className="font-medium truncate">{trackData.title}</div>
             <div className="text-sm text-gray-400 truncate">{trackData.artist || "Jay Cactus"}</div>
           </div>
-          <Button onClick={addToCart} className="bg-white text-black hover:bg-gray-200 text-sm whitespace-nowrap">
+          <Button onClick={addToCart} className="bg-white cursor-pointer text-black hover:bg-gray-200 text-sm whitespace-nowrap">
             🛒 {trackData.price}
           </Button>
         </div>
@@ -59,7 +59,7 @@ export function AudioPlayer({ currentTrack, isPlaying, onPlayPause, onNext, onPr
         {/* Player Controls */}
         <div className="flex flex-col items-center space-y-2 flex-1 max-w-md">
           <div className="flex items-center space-x-4 text-black">
-            <Button variant="outline" size="icon" className="border-gray-600">
+            <Button variant="outline" size="icon" className="border-gray-600 cursor-pointer">
               <Share2 className="w-4 h-4" />
             </Button>
             <Button variant="outline" size="icon" className="border-gray-600" onClick={onPrevious}>
@@ -83,9 +83,9 @@ export function AudioPlayer({ currentTrack, isPlaying, onPlayPause, onNext, onPr
           {/* Progress Bar */}
           <div className="w-full flex items-center space-x-2 text-xs text-gray-400">
             <span>0:00</span>
-            <div className="flex-1 h-1 bg-gray-600 rounded-full overflow-hidden">
+            <div className="flex-1 h-1 bg-gray-600 rounded-full cursor-pointer overflow-hidden">
               <div
-                className="h-full bg-white rounded-full transition-all duration-100"
+                className="h-full bg-white rounded-full transition-all cursor-pointer duration-100"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -98,8 +98,8 @@ export function AudioPlayer({ currentTrack, isPlaying, onPlayPause, onNext, onPr
           <Button variant="outline" size="icon" className="border-gray-600">
             🔊
           </Button>
-          <div className="w-24 h-1 bg-gray-600 rounded">
-            <div className="w-16 h-1 bg-white rounded"></div>
+          <div className="w-24 h-1 bg-gray-600 rounded cursor-pointer">
+            <div className="w-16 h-1 bg-white cursor-pointer rounded"></div>
           </div>
           <Button variant="outline" size="icon" className="border-gray-600">
             📝
