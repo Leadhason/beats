@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/Navigation"
 import { Footer } from "@/components/Footer"
 import { AudioPlayer } from "@/components/AudioPlayer"
@@ -10,16 +10,43 @@ import { TrackGrid } from "@/components/TrackGrid"
 import { TracksSection } from "@/components/TrackSection"
 import { ViewToggle } from "@/components/ViewToggle"
 import { StoreFilters } from "@/components/StoreFilters"
-import { tracks, searchTracks, getAllTags, getAllGenres, type Track } from "@/lib/track-data"
+import {
+  fetchTracks,
+  searchTracks,
+  getAllTags,
+  getAllGenres,
+  type Track,
+} from "@/lib/track-data"
 
 export default function StorePage() {
+  const [tracks, setTracks] = useState<Track[]>([])
+  const [filteredTracks, setFilteredTracks] = useState<Track[]>([])
   const [currentTrack, setCurrentTrack] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filteredTracks, setFilteredTracks] = useState<Track[]>(tracks)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedGenre, setSelectedGenre] = useState<string>("")
   const [selectedTag, setSelectedTag] = useState<string>("")
+  const [loading, setLoading] = useState(true)
+  const [allTags, setAllTags] = useState<string[]>([])
+  const [allGenres, setAllGenres] = useState<string[]>([])
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      const [allTracks, tags, genres] = await Promise.all([
+        fetchTracks(),
+        getAllTags(),
+        getAllGenres(),
+      ])
+      setTracks(allTracks)
+      setFilteredTracks(allTracks)
+      setAllTags(tags)
+      setAllGenres(genres)
+      setLoading(false)
+    }
+    loadData()
+  }, [])
 
   const handleTrackPlay = (trackName: string) => {
     setCurrentTrack(trackName)
@@ -50,34 +77,42 @@ export default function StorePage() {
     }
   }
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query)
-    applyFilters(query, selectedGenre, selectedTag)
+    await applyFilters(query, selectedGenre, selectedTag)
   }
 
-  const handleGenreFilter = (genre: string) => {
+  const handleGenreFilter = async (genre: string) => {
     setSelectedGenre(genre)
-    applyFilters(searchQuery, genre, selectedTag)
+    await applyFilters(searchQuery, genre, selectedTag)
   }
 
-  const handleTagFilter = (tag: string) => {
+  const handleTagFilter = async (tag: string) => {
     setSelectedTag(tag)
-    applyFilters(searchQuery, selectedGenre, tag)
+    await applyFilters(searchQuery, selectedGenre, tag)
   }
 
-  const applyFilters = (query: string, genre: string, tag: string) => {
-    let filtered = tracks
+  const applyFilters = async (query: string, genre: string, tag: string) => {
+    let filtered: Track[] = tracks
 
     if (query) {
-      filtered = searchTracks(query)
+      filtered = await searchTracks(query)
     }
 
     if (genre) {
-      filtered = filtered.filter((track) => track.genre?.toLowerCase() === genre.toLowerCase())
+      filtered = filtered.filter(
+        (track) =>
+          typeof track.genre === "string" &&
+          track.genre.toLowerCase() === genre.toLowerCase()
+      )
     }
 
     if (tag) {
-      filtered = filtered.filter((track) => track.tags.some((trackTag) => trackTag.toLowerCase() === tag.toLowerCase()))
+      filtered = filtered.filter(
+        (track) =>
+          Array.isArray(track.tags) &&
+          track.tags.some((trackTag) => trackTag.toLowerCase() === tag.toLowerCase())
+      )
     }
 
     setFilteredTracks(filtered)
@@ -88,6 +123,14 @@ export default function StorePage() {
     setSelectedGenre("")
     setSelectedTag("")
     setFilteredTracks(tracks)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-pulse">Loading tracks...</div>
+      </div>
+    )
   }
 
   return (
@@ -101,8 +144,8 @@ export default function StorePage() {
           <div className="flex flex-col lg:flex-row gap-6 mb-8">
             <div className="flex-1">
               <StoreFilters
-                genres={getAllGenres()}
-                tags={getAllTags()}
+                genres={allGenres}
+                tags={allTags}
                 selectedGenre={selectedGenre}
                 selectedTag={selectedTag}
                 onGenreChange={handleGenreFilter}

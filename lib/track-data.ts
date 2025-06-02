@@ -1,11 +1,14 @@
+// lib/sanity.ts
+import { createClient } from '@sanity/client'
+
 export interface Track {
-  id: number
+  _id: string
   title: string
   time: string
   bpm: string
   tags: string[]
-  image: string
-  price: string
+  imageUrl: string
+  price: number // Changed to number for calculations
   featured?: boolean
   artist?: string
   genre?: string
@@ -14,182 +17,129 @@ export interface Track {
   previewUrl?: string
 }
 
-export const tracks: Track[] = [
-  {
-    id: 1,
-    title: "Honour",
-    time: "03:18",
-    bpm: "145",
-    tags: ["japanese", "type beat"],
-    image: "/Cover-images/image-1.jpeg",
-    price: "$39.95",
-    featured: true,
-    artist: "Jay Cactus",
-    genre: "Hip Hop",
-    description: "A hard-hitting Japanese-inspired type beat with traditional elements",
-    audioUrl: "/audio/honour.mp3",
-    previewUrl: "/audio/honour-preview.mp3",
-  },
-  {
-    id: 2,
-    title: "Luna",
-    time: "03:35",
-    bpm: "144",
-    tags: ["UK Drill", "Nemzzz"],
-    image: "/Cover-images/image-2.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "UK Drill",
-    description: "Dark and atmospheric UK Drill beat with heavy 808s",
-    audioUrl: "/audio/luna.mp3",
-    previewUrl: "/audio/luna-preview.mp3",
-  },
-  {
-    id: 3,
-    title: "Side",
-    time: "03:47",
-    bpm: "118",
-    tags: ["Young Thug", "Future"],
-    image: "/Cover-images/image-3.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "Trap",
-    description: "Melodic trap beat inspired by Young Thug and Future",
-    audioUrl: "/audio/side.mp3",
-    previewUrl: "/audio/side-preview.mp3",
-  },
-  {
-    id: 4,
-    title: "Tamper",
-    time: "03:19",
-    bpm: "140",
-    tags: ["griselda", "boom bap"],
-    image: "/Cover-images/image-4.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "Boom Bap",
-    description: "Classic boom bap beat with Griselda-style dark vibes",
-    audioUrl: "/audio/tamper.mp3",
-    previewUrl: "/audio/tamper-preview.mp3",
-  },
-  {
-    id: 5,
-    title: "Midnight",
-    time: "03:42",
-    bpm: "130",
-    tags: ["dark", "atmospheric"],
-    image: "/Cover-images/image-5.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "Dark Trap",
-    description: "Moody and atmospheric beat perfect for late night sessions",
-    audioUrl: "/audio/midnight.mp3",
-    previewUrl: "/audio/midnight-preview.mp3",
-  },
-  {
-    id: 6,
-    title: "Elevation",
-    time: "03:28",
-    bpm: "150",
-    tags: ["energetic", "motivational"],
-    image: "/Cover-images/image-6.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "Hip Hop",
-    description: "Uplifting and energetic beat to elevate your mood",
-    audioUrl: "/audio/elevation.mp3",
-    previewUrl: "/audio/elevation-preview.mp3",
-  },
-  {
-    id: 7,
-    title: "Neon Dreams",
-    time: "03:55",
-    bpm: "128",
-    tags: ["synthwave", "retro"],
-    image: "/Cover-images/image-7.jpeg",
-    price: "$39.95",
-    artist: "Jay Cactus",
-    genre: "Synthwave",
-    description: "Retro-futuristic synthwave beat with nostalgic vibes",
-    audioUrl: "/audio/neon-dreams.mp3",
-    previewUrl: "/audio/neon-dreams-preview.mp3",
-  },
-  {
-    id: 8,
-    title: "The Code",
-    time: "03:33",
-    bpm: "142",
-    tags: ["street", "vibe", "hardcore"],
-    image: "/Cover-images/image-8.jpeg",
-    price: "$20.95",
-    artist: "Jay Cactus",
-    genre: "Hardcore Hip Hop",
-    description: "Raw and gritty street beat with hardcore elements",
-    audioUrl: "/audio/street-code.mp3",
-    previewUrl: "/audio/street-code-preview.mp3",
-  },
-]
+// Initialize Sanity client
+const sanityClient = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  useCdn: true, // Use CDN only in production
+  apiVersion: '2023-05-03', // Updated to current API version
+  token: process.env.SANITY_API_TOKEN // For write operations
+})
 
-// Helper functions for working with tracks data
-export const getFeaturedTrack = (): Track | undefined => {
-  return tracks.find((track) => track.featured)
+// Fetch all tracks from Sanity
+export const fetchTracks = async (): Promise<Track[]> => {
+  try {
+    const query = `*[_type == "track"]{
+      _id,
+      title,
+      time,
+      bpm,
+      tags,
+      "imageUrl": coverImage.asset->url,
+      price,
+      featured,
+      artist->{name},
+      genre->{name},
+      description,
+      "audioUrl": audioFile.asset->url,
+      "previewUrl": previewAudio.asset->url
+    }`
+
+    const results = await sanityClient.fetch<Track[]>(query)
+    return results.map(track => ({
+      ...track,
+      artist: track.artist,
+      genre: track.genre,
+      price: track.price
+    }))
+  } catch (error) {
+    console.error('Failed to fetch tracks:', error)
+    return []
+  }
 }
 
-export const getTrackById = (id: number): Track | undefined => {
-  return tracks.find((track) => track.id === id)
+// Helper functions (now async since they use live data)
+export const getFeaturedTrack = async (): Promise<Track | undefined> => {
+  const tracks = await fetchTracks()
+  return tracks.find(track => track.featured)
 }
 
-export const getTrackByTitle = (title: string): Track | undefined => {
-  return tracks.find((track) => track.title.toLowerCase() === title.toLowerCase())
+export const getTrackById = async (id: string): Promise<Track | undefined> => {
+  const tracks = await fetchTracks()
+  return tracks.find(track => track._id === id)
 }
 
-export const getTracksByTag = (tag: string): Track[] => {
-  return tracks.filter((track) => track.tags.some((trackTag) => trackTag.toLowerCase().includes(tag.toLowerCase())))
-}
-
-export const getTracksByGenre = (genre: string): Track[] => {
-  return tracks.filter((track) => track.genre?.toLowerCase().includes(genre.toLowerCase()))
-}
-
-export const searchTracks = (query: string): Track[] => {
-  const lowercaseQuery = query.toLowerCase()
-  return tracks.filter(
-    (track) =>
-      track.title.toLowerCase().includes(lowercaseQuery) ||
-      track.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery)) ||
-      track.genre?.toLowerCase().includes(lowercaseQuery) ||
-      track.description?.toLowerCase().includes(lowercaseQuery) ||
-      track.artist?.toLowerCase().includes(lowercaseQuery),
+export const getTrackByTitle = async (title: string): Promise<Track | undefined> => {
+  const tracks = await fetchTracks()
+  return tracks.find(track => 
+    track.title.toLowerCase() === title.toLowerCase()
   )
 }
 
-export const getAllTags = (): string[] => {
-  const allTags = tracks.flatMap((track) => track.tags)
+export const getTracksByTag = async (tag: string): Promise<Track[]> => {
+  const tracks = await fetchTracks()
+  return tracks.filter(track => 
+    track.tags.some(t => 
+      t.toLowerCase().includes(tag.toLowerCase())
+    )
+  )
+}
+
+export const getTracksByGenre = async (genre: string): Promise<Track[]> => {
+  const tracks = await fetchTracks()
+  return tracks.filter(track => 
+    track.genre?.toLowerCase().includes(genre.toLowerCase())
+  )
+}
+
+export const searchTracks = async (query: string): Promise<Track[]> => {
+  const tracks = await fetchTracks()
+  const lowercaseQuery = query.toLowerCase()
+  
+  return tracks.filter(track =>
+    track.title.toLowerCase().includes(lowercaseQuery) ||
+    (track.tags || []).some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
+    track.genre?.toLowerCase().includes(lowercaseQuery) ||
+    track.description?.toLowerCase().includes(lowercaseQuery) ||
+    track.artist?.toLowerCase().includes(lowercaseQuery)
+  )
+}
+
+export const getAllTags = async (): Promise<string[]> => {
+  const tracks = await fetchTracks()
+  const allTags = tracks.flatMap(track => track.tags || [])
   return [...new Set(allTags)].sort()
 }
 
-export const getAllGenres = (): string[] => {
-  const allGenres = tracks.map((track) => track.genre).filter(Boolean) as string[]
+export const getAllGenres = async (): Promise<string[]> => {
+  const tracks = await fetchTracks()
+  const allGenres = tracks
+    .map(track => track.genre)
+    .filter((genre): genre is string => !!genre)
+    
   return [...new Set(allGenres)].sort()
 }
 
-export const getRandomTracks = (count: number): Track[] => {
+export const getRandomTracks = async (count: number): Promise<Track[]> => {
+  const tracks = await fetchTracks()
   const shuffled = [...tracks].sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
 }
 
-export const getTotalTracksCount = (): number => {
+export const getTotalTracksCount = async (): Promise<number> => {
+  const tracks = await fetchTracks()
   return tracks.length
 }
 
-export const calculateTotalValue = (trackIds: number[]): string => {
+export const calculateTotalValue = async (trackIds: string[]): Promise<string> => {
+  const tracks = await fetchTracks()
   const total = trackIds.reduce((sum, id) => {
-    const track = getTrackById(id)
-    if (track) {
-      const price = Number.parseFloat(track.price.replace("$", ""))
-      return sum + price
-    }
-    return sum
+    const track = tracks.find(t => t._id === id)
+    return sum + (track?.price || 0)
   }, 0)
-  return `$${total.toFixed(2)}`
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'GHS'
+  }).format(total)
 }

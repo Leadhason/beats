@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/Navigation"
 import { HeroSection } from "@/components/Hero"
 import { TracksSection } from "@/components/TrackSection"
@@ -9,14 +9,31 @@ import { NewsletterSection } from "@/components/NewsletterSection"
 import { Footer } from "@/components/Footer"
 import { AudioPlayer } from "@/components/AudioPlayer"
 import { CartSidebar } from "@/components/CartSider"
-import { tracks, getFeaturedTrack, type Track } from "@/lib/track-data"
+import { fetchTracks, getFeaturedTrack, type Track } from "@/lib/track-data"
 
 export default function MusicProducerSite() {
-  const featuredTrack = getFeaturedTrack()
+  const [tracks, setTracks] = useState<Track[]>([])
+  const [featuredTrack, setFeaturedTrack] = useState<Track | null>(null)
   const [currentTrack, setCurrentTrack] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [searchResults, setSearchResults] = useState<Track[] | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [allTracks, featured] = await Promise.all([fetchTracks(), getFeaturedTrack()])
+        setTracks(allTracks)
+        setFeaturedTrack(featured || null)
+      } catch (error) {
+        console.error("Failed to load tracks:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   const handleTrackPlay = (trackName: string) => {
     setCurrentTrack(trackName)
@@ -56,10 +73,18 @@ export default function MusicProducerSite() {
 
   const displayTracks = searchResults || tracks
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-pulse">Please wait...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Navigation />
-      <HeroSection onTrackPlay={handleTrackPlay} onSearchResults={handleSearchResults} />
+      <HeroSection onTrackPlay={handleTrackPlay} onSearchResults={handleSearchResults} featuredTrack={featuredTrack} />
       <TracksSection
         tracks={displayTracks}
         onTrackPlay={handleTrackPlay}
