@@ -84,7 +84,7 @@ export default function MusicProducerSite() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navigation />
-      <HeroSection onTrackPlay={handleTrackPlay} onSearchResults={handleSearchResults} featuredTrack={featuredTrack} />
+      <HeroSection onTrackPlay={handleTrackPlay} onSearchResults={handleSearchResults} />
       <TracksSection
         tracks={displayTracks}
         onTrackPlay={handleTrackPlay}

@@ -38,8 +38,8 @@ export const fetchTracks = async (): Promise<Track[]> => {
       "imageUrl": coverImage.asset->url,
       price,
       featured,
-      artist->{name},
-      genre->{name},
+      artist,
+      genre,
       description,
       "audioUrl": audioFile.asset->url,
       "previewUrl": previewAudio.asset->url

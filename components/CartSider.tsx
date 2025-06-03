@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { X, Minus, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
+import { CheckoutModal } from "./CheckoutModal"
 
 export function CartSidebar() {
   const { state, dispatch } = useCart()
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   // trackId is now a string, not a number
   const updateQuantity = (trackId: string, newQuantity: number) => {
@@ -18,6 +21,10 @@ export function CartSidebar() {
 
   const closeCart = () => {
     dispatch({ type: "TOGGLE_CART" })
+  }
+
+  const handleCheckout = () => {
+    setIsCheckoutOpen(true)
   }
 
   return (
@@ -109,7 +116,10 @@ export function CartSidebar() {
                 <span className="text-base md:text-lg font-bold text-white">Total:</span>
                 <span className="text-lg md:text-xl font-bold text-white">GHS {state.total.toFixed(2)}</span>
               </div>
-              <Button className="w-full bg-white text-black hover:bg-gray-200 font-bold py-3 mb-2">
+              <Button
+                onClick={handleCheckout}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 mb-2"
+              >
                 Proceed to Checkout
               </Button>
               <Button
@@ -123,6 +133,9 @@ export function CartSidebar() {
           )}
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
     </>
   )
 }
