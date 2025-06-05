@@ -32,7 +32,7 @@ export function StoreHeader({ onSearch }: StoreHeaderProps) {
         </p>
 
         {/* Search Bar */}
-        <div className="flex flex-col sm:flex-row max-w-2xl mx-auto bg-white p-2 md:p-3 gap-2 md:gap-3 rounded-lg shadow-lg">
+        <div className="flex flex-col sm:flex-row max-w-2xl mx-auto bg-white p-2 gap-2 md:gap-3 rounded-lg shadow-lg">
           <div className="relative flex-1">
             <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
             <Input

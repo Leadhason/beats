@@ -26,9 +26,25 @@ export default function PaymentCallback() {
         const response = await fetch(`/api/paystack/verify?reference=${reference}`)
         const data = await response.json()
 
+
         if (response.ok && data.status) {
           setStatus("success")
           setPaymentData(data.data)
+          // Call checkout API to create order and send email
+          await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              beatId: data.data.metadata?.items?.[0]?.track_id,
+              customerName: data.data.metadata?.customer_name,
+              customerEmail: data.data.metadata?.customer_email,
+              transactionId: data.data.reference,
+              amount: data.data.amount,
+              currency: "GHS",
+              customerPhone: data.data.metadata?.customer_phone,
+              items: data.data.metadata?.items || [],
+            }),
+          })
         } else {
           setStatus("failed")
         }
@@ -75,11 +91,8 @@ export default function PaymentCallback() {
           <div className="space-y-3">
             <p className="text-sm text-gray-400">Download links have been sent to your email address.</p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/" className="flex-1">
-                <Button className="w-full bg-orange-600 hover:bg-orange-700">Continue Shopping</Button>
-              </Link>
               <Link href="/store" className="flex-1">
-                <Button variant="outline" className="w-full border-gray-600 text-black">
+                <Button variant="outline" className="w-full border-gray-600 cursor-pointer text-black">
                   Browse More Beats
                 </Button>
               </Link>

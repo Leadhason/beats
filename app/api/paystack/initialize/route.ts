@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
         currency: "GHS",
         callback_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/payment/callback`,
         metadata: {
-          ...metadata,
+          ...(metadata || {}),
+          track_id: metadata?.track_id || null,
+          customer_email: email,
           custom_fields: [
             {
               display_name: "Order Type",
