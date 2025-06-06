@@ -19,8 +19,8 @@ export interface Track {
 
 // Initialize Sanity client
 const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  projectId: process.env.SANITY_PROJECT_ID!,
+  dataset: process.env.SANITY_DATASET || 'production',
   useCdn: true, // Use CDN only in production
   apiVersion: '2023-05-03', // Updated to current API version
   token: process.env.SANITY_API_TOKEN // For write operations
