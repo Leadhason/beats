@@ -21,7 +21,7 @@ export function TrackCard({ track, onTrackPlay }: TrackCardProps) {
 
   return (
     <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-all duration-300 group">
-      <CardContent className="p-0">
+      <CardContent className="">
         {/* Track Image */}
         <div className="relative aspect-square overflow-hidden rounded-t-lg">
           <img
