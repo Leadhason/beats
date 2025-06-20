@@ -62,7 +62,7 @@ function getFileUrl(fileRef: any): string | null {
 // Fetch beat from Sanity
 async function fetchBeat(beatId: string): Promise<Beat | null> {
   try {
-    const query = `*[_type == "beat" && _id == $beatId][0] {
+    const query = `*[_type == "track" && _id == $beatId][0] {
       _id,
       title,
       artist,

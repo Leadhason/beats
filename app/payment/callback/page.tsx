@@ -35,7 +35,7 @@ export default function PaymentCallback() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              beatId: data.data.metadata?.items?.[0]?.track_id,
+              beatId: data.data.metadata?.items?.[0]?.track_id || data.data.metadata?.track_id,
               customerName: data.data.metadata?.customer_name,
               customerEmail: data.data.metadata?.customer_email,
               transactionId: data.data.reference,
